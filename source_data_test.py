@@ -9,7 +9,7 @@ class SourceDataTest(unittest.TestCase):
         ids = source_data.get_ids()
         self.assertTrue(type(ids), list)
         self.assertGreater(len(ids), 0)
-        self.assertTrue(all([type(id) == unicode for id in ids]))
+        self.assertTrue(all([type(id) == str for id in ids]))
 
     def test_get_data(self):
         id = 'DP00086'
