@@ -1,12 +1,13 @@
 import numpy as np
 import unittest
-import source_data
+from unittest.mock import MagicMock
+from source_data import SourceData
 
 
 class SourceDataTest(unittest.TestCase):
     
     def test_get_ids(self):
-        ids = source_data.get_ids()
+        ids = SourceData.get_ids()
         self.assertTrue(type(ids), list)
         self.assertGreater(len(ids), 0)
         self.assertTrue(all([type(id) == str for id in ids]))
@@ -29,7 +30,7 @@ class SourceDataTest(unittest.TestCase):
             'IIIIIIIIIIIIIIIIIIIIIIIIIIIIDDDDDDDDDDDDDDDDDDDD???????IIIIIIIIIII'
             'IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII'),
             dtype=np.unicode_)
-        X, Y = source_data.get_data(id)
+        X, Y = SourceData.get_data(id)
         self.assertTrue(np.array_equal(X, expected_X))
         self.assertTrue(np.array_equal(Y, expected_Y))
 
