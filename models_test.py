@@ -53,6 +53,29 @@ class ModalValueClassifierTest(unittest.TestCase):
         self.assertListEqual(model_string.predict(X_string),
                              expected_prediction_string)
 
+    def test_score(self):
+        with self.assertRaises(RuntimeError):
+            Y = np.ones((2, 2, 2))
+            ModalValueClassifier().predict(Y)
+
+        model_int = ModalValueClassifier()
+        model_int._mode = 0
+
+        X_array = np.ones((2, 2, 2))
+        Y_array = np.array([[[0, 1], [2, 3], [4, 5], [6, 7]],
+                            [[0, 0], [2, 3], [4, 5], [6, 7]]], dtype=int)
+        self.assertEqual(model_int.score(X_array, Y_array), 0.1875)
+
+        Y_mixed = [(np.array([0, 1], dtype=int), np.array([2, 3], dtype=int),
+                    np.array([4, 5], dtype=int)), [6, 7], (0, 0, 2, 3),
+                    np.array([[4, 5], [6, 7]], dtype=int)]
+        self.assertEqual(model_int.score(Y_mixed), 0.1875)
+
+        model_string = ModalValueClassifier()
+        model_string._mode = 'zero'
+        Y_string = [['zero', 'one',  'two', 'three'],
+                    ['zero', 'zero', 'two', 'three']]
+        self.assertEqual(model_string.score(Y_string), 0.375)
 
 if __name__ == '__main__':
     unittest.main()
