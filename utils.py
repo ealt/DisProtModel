@@ -9,6 +9,13 @@ def try_get_request(kwargs):
     except requests.exceptions.RequestException as e:
         print(e)
 
+def flatten(obj):
+    if type(obj) == str or not hasattr(obj, '__iter__'):
+        yield obj
+    else:
+        for element in obj:
+            yield from flatten(element)
+
 def eq(a, b):
     if not (hasattr(a, '__iter__') or type(a) == str):
         return a == b
