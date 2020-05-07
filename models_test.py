@@ -1,6 +1,6 @@
 import numpy as np
 import unittest
-from models import ModalValueClassifier
+from models import ModalValueClassifier, NaiveClassifier
 import utils
 
 
@@ -56,7 +56,7 @@ class ModalValueClassifierTest(unittest.TestCase):
     def test_score(self):
         with self.assertRaises(RuntimeError):
             Y = np.ones((2, 2, 2))
-            ModalValueClassifier().predict(Y)
+            ModalValueClassifier().score(Y)
 
         model_int = ModalValueClassifier()
         model_int._mode = 0
@@ -76,6 +76,53 @@ class ModalValueClassifierTest(unittest.TestCase):
         Y_string = [['zero', 'one',  'two', 'three'],
                     ['zero', 'zero', 'two', 'three']]
         self.assertEqual(model_string.score(Y_string), 0.375)
+
+
+class NaiveClassifierTest(unittest.TestCase):
+    
+    def test_fit(self):
+        X = np.array(['a', 'a', 'a', 'b', 'b', 'b', 'c', 'd'])
+        Y = np.array(['x', 'x', 'y', 'z', 'z', 'z', 'y', 'z'])
+        expected_most_likely_y = {'a': 'x', 'b': 'z', 'c': 'y', 'd': 'z'}
+        model = NaiveClassifier().fit(X, Y)
+        self.assertEqual(model._mode, 'z')
+        self.assertDictEqual(model._most_likely_y, expected_most_likely_y)
+
+    def test_predict(self):
+        with self.assertRaises(RuntimeError):
+            X = np.ones((2, 2, 2))
+            NaiveClassifier().predict(X)
+        
+        model = NaiveClassifier()
+        model._mode = 'w'
+        model._most_likely_y = {
+            'a': 'x',
+            'b': 'y',
+            'c': 'z'
+        }
+
+        X     = np.array(['z', 'a', 'b', 'b', 'b', 'c', 'd', 'e'])
+        Y_hat = np.array(['w', 'x', 'y', 'y', 'y', 'z', 'w', 'w'])
+        self.assertTrue(np.array_equal(model.predict(X), Y_hat))
+
+    def test_score(self):
+        with self.assertRaises(RuntimeError):
+            X = np.ones((2, 2, 2))
+            Y = np.ones((2, 2, 2))
+            NaiveClassifier().score(X, Y)
+        
+        model = NaiveClassifier()
+        model._mode = 'w'
+        model._most_likely_y = {
+            'a': 'x',
+            'b': 'y',
+            'c': 'z'
+        }
+
+        X = np.array(['z', 'a', 'b', 'b', 'b', 'c', 'd', 'e'])
+        Y = np.array(['q', 'x', 'y', 'y', 'y', 'z', 'q', 'q'])
+        self.assertEqual(model.score(X, Y), 0.625)
+
 
 if __name__ == '__main__':
     unittest.main()

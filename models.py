@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import defaultdict, Counter
 import numpy as np
 from operator import itemgetter
 from scipy import stats
@@ -45,5 +45,35 @@ class ModalValueClassifier(BaseEstimator,ClassifierMixin):
         for y in utils.flatten(Y):
             total += 1
             if y == self._mode:
+                correct += 1
+        return correct / total
+
+
+class NaiveClassifier(BaseEstimator,ClassifierMixin):
+    def fit(self, X, Y):
+        unigram_counts = Counter()
+        pair_counts = defaultdict(Counter)
+        for x, y in zip(utils.flatten(X), utils.flatten(Y)):
+            unigram_counts[y] += 1
+            pair_counts[x][y] += 1
+        self._mode = max(unigram_counts.items(), key=itemgetter(1))[0]
+        self._most_likely_y = {x: y_counts.most_common(1)[0][0]
+                               for x, y_counts in pair_counts.items()}
+        return self
+    
+    def predict(self, X):
+        if not (hasattr(self, '_mode') and hasattr(self, '_most_likely_y')):
+            raise RuntimeError("Model must be fit before calling predict")
+        return np.array([self._most_likely_y.get(x, self._mode)
+                         for x in utils.flatten(X)])
+
+    def score(self, X, Y=None):
+        if not (hasattr(self, '_mode') and hasattr(self, '_most_likely_y')):
+            raise RuntimeError("Model must be fit before calling score")
+        correct = 0
+        total = 0
+        for x, y in zip(utils.flatten(X), utils.flatten(Y)):
+            total += 1
+            if self._most_likely_y.get(x, self._mode) == y:
                 correct += 1
         return correct / total
