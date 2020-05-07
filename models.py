@@ -39,3 +39,22 @@ class ModalValueClassifier(BaseEstimator,ClassifierMixin):
                 return [self._get_predictions(x) for x in X]
         else:
             return self._mode
+
+    def score(self, X, Y=None):
+        if not hasattr(self, '_mode'):
+            raise RuntimeError("Model must be fit before calling predict")
+        if Y is None:
+            Y = X
+        self._correct = 0
+        self._total = 0
+        self._update_score_counts(Y)
+        return self._correct / self._total
+
+    def _update_score_counts(self, Y):
+        if hasattr(Y, '__iter__') and type(Y) != str:
+            for y in Y:
+                self._update_score_counts(y)
+        else:
+            self._total += 1
+            if Y == self._mode:
+                self._correct += 1
