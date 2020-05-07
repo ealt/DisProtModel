@@ -37,7 +37,7 @@ class ModalValueClassifier(BaseEstimator,ClassifierMixin):
 
     def score(self, X, Y=None):
         if not hasattr(self, '_mode'):
-            raise RuntimeError("Model must be fit before calling predict")
+            raise RuntimeError("Model must be fit before calling score")
         if Y is None:
             Y = X
         correct = 0
