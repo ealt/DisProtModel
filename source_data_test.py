@@ -1,3 +1,4 @@
+from tempfile import TemporaryFile
 from mock import patch
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -96,6 +97,22 @@ class SourceDataTest(unittest.TestCase):
         )
         data = SourceData.load_data_sets('nonexistant_file.npz')
         self.assertListEqual(data, expected_data)
+    
+    def test_save_data_sets(self):
+        X_train = [MOCK_DATA[id]['X'] for id in MOCK_TRAIN_IDS]
+        X_test  = [MOCK_DATA[id]['X'] for id in MOCK_TEST_IDS]
+        Y_train = [MOCK_DATA[id]['Y'] for id in MOCK_TRAIN_IDS]
+        Y_test  = [MOCK_DATA[id]['Y'] for id in MOCK_TEST_IDS]
+        with TemporaryFile() as outfile:
+            SourceData.save_data_sets(X_train=X_train, X_test=X_test,
+                                    Y_train=Y_train, Y_test=Y_test,
+                                    file_args=outfile)
+            _ = outfile.seek(0)  # Needed to simulate closing & reopening file
+            with np.load(outfile) as infile:
+                self.assertTrue(np.array_equal(infile['X_train'], X_train))
+                self.assertTrue(np.array_equal(infile['X_test'],  X_test))
+                self.assertTrue(np.array_equal(infile['Y_train'], Y_train))
+                self.assertTrue(np.array_equal(infile['Y_test'],  Y_test))
 
 
 if __name__ == '__main__':

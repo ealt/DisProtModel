@@ -66,3 +66,18 @@ class SourceData:
                         for data_type in ('X', 'Y')
                         for data_set in ('train', 'test')]
         return list(data[data_set_name] for data_set_name in data_set_names)
+    
+    @staticmethod
+    def save_data_sets(X_train, X_test, Y_train, Y_test, file_args='data.npz',
+                       **kwargs):
+        if type(file_args) == str:
+            with open(file_args, 'wb') as outfile:
+                np.savez_compressed(outfile, X_train=X_train, X_test=X_test,
+                         Y_train=Y_train, Y_test=Y_test)
+        else:
+            try:
+                np.savez_compressed(file_args, X_train=X_train, X_test=X_test,
+                         Y_train=Y_train, Y_test=Y_test)
+            except TypeError as e:
+                print('TypeError with file_args in SourceData.save_data_sets()',
+                      e)
