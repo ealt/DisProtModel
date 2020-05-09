@@ -89,12 +89,12 @@ class SourceDataTest(unittest.TestCase):
     @patch.object(SourceData, 'get_ids', return_value=MOCK_IDS)
     @patch.object(SourceData, 'get_data', side_effect=get_data_mock)
     def test_get_data_sets(self, mock_get_ids, mock_get_data):
-        expected_data = (
+        expected_data = [
             [MOCK_DATA[id]['X'] for id in MOCK_TRAIN_IDS],
             [MOCK_DATA[id]['X'] for id in MOCK_TEST_IDS],
             [MOCK_DATA[id]['Y'] for id in MOCK_TRAIN_IDS],
             [MOCK_DATA[id]['Y'] for id in MOCK_TEST_IDS],
-        )
+        ]
         data = SourceData.load_data_sets('nonexistant_file.npz')
         self.assertListEqual(data, expected_data)
     
