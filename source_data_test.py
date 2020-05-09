@@ -90,12 +90,12 @@ class SourceDataTest(unittest.TestCase):
     def test_get_data_sets(self, mock_get_ids, mock_get_data):
         expected_data = (
             [MOCK_DATA[id]['X'] for id in MOCK_TRAIN_IDS],
-            [MOCK_DATA[id]['Y'] for id in MOCK_TRAIN_IDS],
             [MOCK_DATA[id]['X'] for id in MOCK_TEST_IDS],
+            [MOCK_DATA[id]['Y'] for id in MOCK_TRAIN_IDS],
             [MOCK_DATA[id]['Y'] for id in MOCK_TEST_IDS],
         )
-        data = tuple(SourceData.load_data_sets('nonexistant_file.npz'))
-        self.assertTupleEqual(data, expected_data)
+        data = SourceData.load_data_sets('nonexistant_file.npz')
+        self.assertListEqual(data, expected_data)
 
 
 if __name__ == '__main__':

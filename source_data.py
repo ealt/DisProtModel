@@ -44,10 +44,10 @@ class SourceData:
         try:
             data = np.load(file_arg)
             data_set_names = [data_type + '_' + data_set
-                              for data_set in ('train', 'test')
-                              for data_type in ('X', 'Y')]
-            data_sets = (data[data_set_name]
-                         for data_set_name in data_set_names)
+                              for data_type in ('X', 'Y')
+                              for data_set in ('train', 'test')]
+            data_sets = list(data[data_set_name]
+                              for data_set_name in data_set_names)
         except:
             data_sets = SourceData.get_data_sets(file_arg)
         return data_sets
@@ -63,6 +63,6 @@ class SourceData:
             data['X_' + data_set].append(X)
             data['Y_' + data_set].append(Y)
         data_set_names = [data_type + '_' + data_set
-                        for data_set in ('train', 'test')
-                        for data_type in ('X', 'Y')]
-        return (data[data_set_name] for data_set_name in data_set_names)
+                        for data_type in ('X', 'Y')
+                        for data_set in ('train', 'test')]
+        return list(data[data_set_name] for data_set_name in data_set_names)
