@@ -42,7 +42,9 @@ class SourceData:
     @staticmethod
     def load_data_sets(file_arg='data.npz'):
         try:
-            data = np.load(file_arg)
+            # Only load data from trusted sources, see warning in documentation:
+            # https://numpy.org/doc/stable/reference/generated/numpy.load.html#numpy.load
+            data = np.load(file_arg, allow_pickle=True)
             data_set_names = [data_type + '_' + data_set
                               for data_type in ('X', 'Y')
                               for data_set in ('train', 'test')]

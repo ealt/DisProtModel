@@ -86,6 +86,18 @@ class SourceDataTest(unittest.TestCase):
         self.assertTrue(np.array_equal(X, expected_X))
         self.assertTrue(np.array_equal(Y, expected_Y))
 
+    def test_load_data_sets(self):
+        expected_data = [
+            np.array([MOCK_DATA[id]['X'] for id in MOCK_TRAIN_IDS]),
+            np.array([MOCK_DATA[id]['X'] for id in MOCK_TEST_IDS]),
+            np.array([MOCK_DATA[id]['Y'] for id in MOCK_TRAIN_IDS]),
+            np.array([MOCK_DATA[id]['Y'] for id in MOCK_TEST_IDS]),
+        ]
+        data = SourceData.load_data_sets('test_data.npz')
+        for data_set, expected_data_set in zip(data, expected_data):
+            self.assertTrue(np.array_equal(data_set, expected_data_set))
+
+
     @patch.object(SourceData, 'get_ids', return_value=MOCK_IDS)
     @patch.object(SourceData, 'get_data', side_effect=get_data_mock)
     def test_get_data_sets(self, mock_get_ids, mock_get_data):
