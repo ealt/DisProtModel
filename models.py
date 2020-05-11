@@ -10,7 +10,7 @@ class ModalValueClassifier(BaseEstimator,ClassifierMixin):
         if Y is None:
             Y = X
         if isinstance(Y, np.ndarray):
-            self._mode = stats.mode(Y.flatten())[0][0]
+            self._mode = stats.mode(np.concatenate(Y))[0][0]
         else:
             unigram_counts = Counter()
             for y in utils.flatten(Y):
