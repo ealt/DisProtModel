@@ -74,7 +74,7 @@ class NaiveClassifier(BaseEstimator,ClassifierMixin):
         return np.array([self._most_likely_y.get(x, self._mode)
                          for x in utils.flatten(X)])
 
-    def score(self, X, Y=None):
+    def score(self, X, Y):
         if not (hasattr(self, '_mode') and hasattr(self, '_most_likely_y')):
             raise RuntimeError("Model must be fit before calling score")
         correct = 0
