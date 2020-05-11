@@ -23,6 +23,10 @@ class ModalValueClassifierTest(unittest.TestCase):
         model_mixed = ModalValueClassifier().fit(Y_mixed)
         self.assertEqual(model_mixed._mode, 0)
 
+        Y_ignore = list('A A A A A B B B C C D D E F G H')
+        model_ignore = ModalValueClassifier().fit(Y_ignore, ignore=[' '])
+        self.assertEqual(model_ignore._mode, 'A')
+
     def test_predict(self):
         with self.assertRaises(RuntimeError):
             X = np.ones((2, 2, 2))
@@ -77,6 +81,12 @@ class ModalValueClassifierTest(unittest.TestCase):
                     ['zero', 'zero', 'two', 'three']]
         self.assertEqual(model_string.score(Y_string), 0.375)
 
+        Y_ignore = list('A A A A A B B B C C D D E F G H')
+        model_ignore = ModalValueClassifier().fit(Y_ignore)
+        model_ignore._ignore = set(' ')
+        model_ignore._mode = 'A'
+        self.assertEqual(model_ignore.score(Y_ignore), 0.3125)
+
 
 class NaiveClassifierTest(unittest.TestCase):
     
@@ -87,6 +97,13 @@ class NaiveClassifierTest(unittest.TestCase):
         model = NaiveClassifier().fit(X, Y)
         self.assertEqual(model._mode, 'z')
         self.assertDictEqual(model._most_likely_y, expected_most_likely_y)
+
+        X_ignore = np.ones(16, dtype=int)
+        Y_ignore = np.array(list('A' * 7 + '?' * 9 ))
+        expected_most_likely_y_ignore = {1: 'A'}
+        model_ignore = NaiveClassifier().fit(X_ignore, Y_ignore, ignore=['?'])
+        self.assertDictEqual(model_ignore._most_likely_y,
+                             expected_most_likely_y_ignore)
 
     def test_predict(self):
         with self.assertRaises(RuntimeError):
@@ -122,6 +139,14 @@ class NaiveClassifierTest(unittest.TestCase):
         X = np.array(['z', 'a', 'b', 'b', 'b', 'c', 'd', 'e'])
         Y = np.array(['q', 'x', 'y', 'y', 'y', 'z', 'q', 'q'])
         self.assertEqual(model.score(X, Y), 0.625)
+
+        model_ignore = NaiveClassifier()
+        model_ignore._ignore = set('?')
+        model_ignore._mode = 'y'
+        model_ignore._most_likely_y = {'a': 'x'}
+        X_ignore = list('a' * 16)
+        Y_ignore = list('x' * 3 + 'y' * 5 + '?' * 8)
+        self.assertEqual(model_ignore.score(X_ignore, Y_ignore), 0.375)
 
 
 if __name__ == '__main__':
