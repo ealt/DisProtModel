@@ -27,16 +27,16 @@ class SourceData:
             ])
         })
         data = json.loads(response.text)
-        X = np.array(list(data['sequence']), dtype=np.unicode_)
+        X = np.array([ord(amino_acid) for amino_acid in data['sequence']])
         Y = SourceData._get_sequence_labels(data['length'],
                                             data['disprot_consensus']['full'])
         return X, Y
 
     @staticmethod
     def _get_sequence_labels(length, consensus):
-        Y = np.array(['?']*length, dtype=np.unicode_)
+        Y = np.full(length, np.nan)
         for region in consensus:
-            Y[region['start']-1:region['end']] = region['type']
+            Y[region['start']-1:region['end']] = ord(region['type'])
         return Y
 
     @staticmethod
