@@ -136,7 +136,7 @@ class SourceDataTest(unittest.TestCase):
         ]
         data = SourceData.load_data_sets('test_data.npz')
         for data_set, expected_data_set in zip(data, expected_data):
-            self.assertTrue(np.array_equal(data_set, expected_data_set))
+            np.testing.assert_array_equal(data_set, expected_data_set)
 
 
     @patch.object(SourceData, 'get_ids', return_value=MOCK_IDS)
@@ -162,10 +162,10 @@ class SourceDataTest(unittest.TestCase):
                                     file_args=outfile)
             _ = outfile.seek(0)  # Needed to simulate closing & reopening file
             with np.load(outfile) as infile:
-                self.assertTrue(np.array_equal(infile['X_train'], X_train))
-                self.assertTrue(np.array_equal(infile['X_test'],  X_test))
-                self.assertTrue(np.array_equal(infile['Y_train'], Y_train))
-                self.assertTrue(np.array_equal(infile['Y_test'],  Y_test))
+                np.testing.assert_array_equal(infile['X_train'], X_train)
+                np.testing.assert_array_equal(infile['X_test'],  X_test)
+                np.testing.assert_array_equal(infile['Y_train'], Y_train)
+                np.testing.assert_array_equal(infile['Y_test'],  Y_test)
 
 
 if __name__ == '__main__':
