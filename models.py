@@ -11,7 +11,10 @@ class ModalValueClassifier(BaseEstimator,ClassifierMixin):
             Y = X
         self._ignore = set(ignore)
         if isinstance(Y, np.ndarray):
-            self._mode = stats.mode(np.concatenate(Y))[0][0]
+            Y = np.concatenate(Y)
+            for val in ignore:
+                Y[Y == val] == np.nan
+            self._mode = stats.mode(Y, nan_policy='omit')[0][0]
         else:
             unigram_counts = Counter()
             for y in utils.flatten(Y):
