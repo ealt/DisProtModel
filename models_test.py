@@ -102,9 +102,9 @@ class NaiveClassifierTest(unittest.TestCase):
         self.assertEqual(model._mode, 'z')
         self.assertDictEqual(model._most_likely_y, expected_most_likely_y)
 
-        X_ignore = np.ones(16, dtype=int)
+        X_ignore = np.array(list('X' * 16))
         Y_ignore = np.array(list('A' * 7 + '?' * 9 ))
-        expected_most_likely_y_ignore = {1: 'A'}
+        expected_most_likely_y_ignore = {'X': 'A'}
         model_ignore = NaiveClassifier().fit(X_ignore, Y_ignore, ignore=['?'])
         self.assertDictEqual(model_ignore._most_likely_y,
                              expected_most_likely_y_ignore)

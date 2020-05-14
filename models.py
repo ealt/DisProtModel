@@ -10,19 +10,16 @@ class ModalValueClassifier(BaseEstimator,ClassifierMixin):
         if Y is None:
             Y = X
         self._ignore = set(ignore)
-        if isinstance(Y, np.ndarray):
-            Y = np.concatenate(Y)
-            for val in ignore:
-                Y[Y == val] = np.nan
-            self._mode = stats.mode(Y, nan_policy='omit')[0][0]
-        else:
-            unigram_counts = Counter()
-            for y in utils.flatten(Y):
-                unigram_counts[y] += 1
-            for val in ignore:
-                del unigram_counts[val]
-            self._mode = max(unigram_counts.items(), key=itemgetter(1))[0]
+        self._mode = self._get_mode(Y)
         return self
+    
+    def _get_mode(self, Y):
+        try:
+            return stats.mode([y for y in np.concatenate(Y)
+                            if y not in self._ignore], nan_policy='omit')[0][0]
+        except:
+            return stats.mode([y for y in utils.flatten(Y)
+                            if y not in self._ignore], nan_policy='omit')[0][0]
 
     def predict(self, X):
         if not hasattr(self, '_mode'):
@@ -60,16 +57,32 @@ class ModalValueClassifier(BaseEstimator,ClassifierMixin):
 class NaiveClassifier(BaseEstimator,ClassifierMixin):
     def fit(self, X, Y, ignore=[], **kwargs):
         self._ignore = set(ignore)
-        unigram_counts = Counter()
-        pair_counts = defaultdict(Counter)
-        for x, y in zip(utils.flatten(X), utils.flatten(Y)):
-            if y not in self._ignore:
-                unigram_counts[y] += 1
-                pair_counts[x][y] += 1
-        self._mode = max(unigram_counts.items(), key=itemgetter(1))[0]
-        self._most_likely_y = {x: y_counts.most_common(1)[0][0]
-                               for x, y_counts in pair_counts.items()}
+        self._mode = self._get_mode(Y)
+        self._most_likely_y = self._get_most_likely_y(X, Y)
         return self
+    
+    def _get_mode(self, Y):
+        try:
+            return stats.mode([y for y in np.concatenate(Y)
+                            if y not in self._ignore], nan_policy='omit')[0][0]
+        except:
+            return stats.mode([y for y in utils.flatten(Y)
+                            if y not in self._ignore], nan_policy='omit')[0][0]
+
+    def _get_most_likely_y(self, X, Y):
+        try:
+            pairs, pair_counts = np.unique([[x, y]
+                        for x, y in zip(np.concatenate(X), np.concatenate(Y))
+                        if y not in self._ignore], axis=0, return_counts=True)
+        except:
+            pairs, pair_counts = np.unique([[x, y]
+                        for x, y in zip(utils.flatten(X), utils.flatten(Y))
+                        if y not in self._ignore], axis=0, return_counts=True)
+        count_dict = defaultdict(Counter)
+        for pair, pair_count in zip(pairs, pair_counts):
+            count_dict[pair[0]][pair[1]] = pair_count
+        return {x: y_counts.most_common(1)[0][0]
+                for x, y_counts in count_dict.items()}
     
     def predict(self, X):
         if not (hasattr(self, '_mode') and hasattr(self, '_most_likely_y')):
