@@ -33,6 +33,7 @@ class ModalValueClassifierTest(unittest.TestCase):
             ModalValueClassifier().predict(X)
         
         model_int = ModalValueClassifier()
+        model_int._ignore = set()
         model_int._mode = 0
 
         X_array = np.ones((2, 2, 2))
@@ -51,6 +52,7 @@ class ModalValueClassifierTest(unittest.TestCase):
                                  expected_prediction_mixed))
 
         model_string = ModalValueClassifier()
+        model_string._ignore = set()
         model_string._mode = 'zero'
         X_string = [i for i in range(5)]
         expected_prediction_string = ['zero', 'zero', 'zero', 'zero', 'zero']
@@ -63,6 +65,7 @@ class ModalValueClassifierTest(unittest.TestCase):
             ModalValueClassifier().score(Y)
 
         model_int = ModalValueClassifier()
+        model_int._ignore = set()
         model_int._mode = 0
 
         X_array = np.ones((2, 2, 2))
@@ -76,6 +79,7 @@ class ModalValueClassifierTest(unittest.TestCase):
         self.assertEqual(model_int.score(Y_mixed), 0.1875)
 
         model_string = ModalValueClassifier()
+        model_string._ignore = set()
         model_string._mode = 'zero'
         Y_string = [['zero', 'one',  'two', 'three'],
                     ['zero', 'zero', 'two', 'three']]
@@ -111,6 +115,7 @@ class NaiveClassifierTest(unittest.TestCase):
             NaiveClassifier().predict(X)
         
         model = NaiveClassifier()
+        model._ignore = set()
         model._mode = 'w'
         model._most_likely_y = {
             'a': 'x',
@@ -129,6 +134,7 @@ class NaiveClassifierTest(unittest.TestCase):
             NaiveClassifier().score(X, Y)
         
         model = NaiveClassifier()
+        model._ignore = set()
         model._mode = 'w'
         model._most_likely_y = {
             'a': 'x',
