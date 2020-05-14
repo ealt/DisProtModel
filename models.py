@@ -13,7 +13,7 @@ class ModalValueClassifier(BaseEstimator,ClassifierMixin):
         if isinstance(Y, np.ndarray):
             Y = np.concatenate(Y)
             for val in ignore:
-                Y[Y == val] == np.nan
+                Y[Y == val] = np.nan
             self._mode = stats.mode(Y, nan_policy='omit')[0][0]
         else:
             unigram_counts = Counter()
