@@ -16,6 +16,16 @@ def flatten(obj):
         for element in obj:
             yield from flatten(element)
 
+def get_lag_match_frequency(X, k=1):
+    num_matches = 0
+    num_total = 0
+    for x in X:
+        dx = x[k:] - x[:-k]
+        n = dx.size
+        num_matches += n - np.count_nonzero(dx)
+        num_total += n - np.count_nonzero(np.isnan(dx))
+    return num_matches / num_total
+
 def eq(a, b):
     if not (hasattr(a, '__iter__') or type(a) == str):
         return a == b

@@ -20,5 +20,14 @@ class UtilsTest(unittest.TestCase):
         mixed_flattened = [0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 2, 3, 4, 5, 6, 7]
         self.assertListEqual(list(utils.flatten(mixed)), mixed_flattened)
 
+    def test_get_lag_match_frequency(self):
+        X = [
+            np.array([0, 0, 1, np.nan, np.nan, 0, 1, 1]),
+            np.array([0, 0, 0, 0, 0])
+        ]
+        self.assertEqual(utils.get_lag_match_frequency(X), 0.75)
+        self.assertEqual(utils.get_lag_match_frequency(X, 4), 1.0)
+
+
 if __name__ == '__main__':
     unittest.main()
