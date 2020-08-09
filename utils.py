@@ -28,26 +28,27 @@ def get_lag_match_frequency(X, k=1):
     return num_matches / num_total
 
 def get_value_counts(X, k=1):
+    total = Counter()
     head = Counter()
-    mid = Counter()
     tail = Counter()
     for x in X:
-        if len(x) >= 2 * k:
-            update_counts(head, x[:k])
-            update_counts(mid, x[k:-k])
-            update_counts(tail, x[-k:])
-        else:
-            update_counts(head, x[:-k])
-            update_counts(tail, x[k:])
-    head += mid
-    tail += mid
-    return head, tail
+        n = len(x)
+        if n >= 2 * k:
+            update_counts([total, head], x[:k])
+            update_counts([total, head, tail], x[k:-k])
+            update_counts([total, tail], x[-k:])
+        elif n > k:
+            update_counts([total, head], x[:-k])
+            update_counts([total], x[-k:k])
+            update_counts([total, tail], x[k:])
+    return total, head, tail
 
-def update_counts(counter, x):
+def update_counts(counters, x):
     values, value_counts = np.unique(x, return_counts=True)
     for value, value_count in zip(values, value_counts):
         if ~np.isnan(value):
-            counter[value] += value_count
+            for counter in counters:
+                counter[value] += value_count
 
 def eq(a, b):
     if not (hasattr(a, '__iter__') or type(a) == str):
