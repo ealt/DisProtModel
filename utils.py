@@ -50,6 +50,13 @@ def update_counts(counters, x):
             for counter in counters:
                 counter[value] += value_count
 
+def get_frequency_inner_product(counts_1, counts_2):
+    frequency_inner_product = 0
+    for key in counts_1:
+        frequency_inner_product += counts_1[key] * counts_2.get(key, 0)
+    frequency_inner_product /= sum(counts_1.values()) * sum(counts_2.values())
+    return frequency_inner_product
+
 def eq(a, b):
     if not (hasattr(a, '__iter__') or type(a) == str):
         return a == b

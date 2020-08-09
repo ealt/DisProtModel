@@ -60,6 +60,19 @@ class UtilsTest(unittest.TestCase):
         self.assertDictEqual(head, expected_head)
         self.assertDictEqual(tail, expected_tail)
 
+    def test_get_frequency_inner_product(self):
+        counts_1 = {0.: 1, 1.: 3}  # freq = [1/4, 3/4, 0]
+
+        counts_2 = {0.: 2, 1.: 4, 2.: 2}  # freq = [1/4, 1/2, 1/4]        
+        expected_frequency_inner_product = 0.4375  # 7/16
+        self.assertEqual(utils.get_frequency_inner_product(counts_1, counts_2),
+                         expected_frequency_inner_product)
+
+        counts_3 = {2.: 3}  # freq = [0, 0, 1]
+        expected_frequency_inner_product = 0.
+        self.assertEqual(utils.get_frequency_inner_product(counts_1, counts_3),
+                         expected_frequency_inner_product)
+
 
 if __name__ == '__main__':
     unittest.main()
